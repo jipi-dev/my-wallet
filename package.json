@@ -1,0 +1,10 @@
+{
+  "name": "my-wallet",
+  "version": "0.0.1",
+  "description": "This is a test wallet to start practicing ",
+  "author": "estebanjcoria@gmail.com",
+  "license": "ISC",
+  "devDependencies": {
+    "husky": "^7.0.1"
+  }
+}
