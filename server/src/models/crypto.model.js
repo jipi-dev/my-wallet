@@ -11,4 +11,7 @@ const CryptoSchema = mongoose.Schema({
     },
 });
 
-module.exports = mongoose.model('Crypto', CryptoSchema);
+module.exports = {
+  schema: CryptoSchema,
+  model: mongoose.model('Crypto', CryptoSchema),
+};

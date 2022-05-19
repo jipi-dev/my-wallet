@@ -1,18 +1,17 @@
 const express = require('express');
 
 const router = express.Router();
-const { model: Cryptos } = require('../models/crypto.model');
+const Wallet = require('../models/wallet.model');
 const errors = require('../middlewares/error');
 const logger = require('../logger');
 
 router.get('/', async (req, res, next) => {
-    logger.log('info', 'Request GET');
+    logger.log('info', 'Wallet Request GET');
     try {
-        const data = await Cryptos.find().sort({ date: -1 }).limit(10);
+        const data = await Wallet.find().sort({ date: -1 }).limit(10);
         res.status(200).json({
             state: 'success',
             data,
-
         });
     } catch (error) {
         next({ status: 500, message: 'Error reading DB', stack: error });
@@ -20,22 +19,22 @@ router.get('/', async (req, res, next) => {
 });
 
 router.post('/', async (req, res, next) => {
-    logger.log('info', `Request POST, with this body: ${JSON.stringify(req.body)}`);
-    const { code, amount } = req.body;
-    if (!code || !amount) {
+    logger.log('info', `Wallet Request POST, with this body: ${JSON.stringify(req.body)}`);
+    const { name, cryptos } = req.body;
+    if (!name || !cryptos) {
         res.status(400).json({
             state: 'error',
-            message: 'Code and amount are needed',
+            message: 'Name and cryptos are needed',
         });
-        logger.log('error', 'Request POST, Description and amount are needed');
+        logger.log('error', 'Request POST, name are cryptos');
         return;
     }
-    const crypto = new Cryptos({
-        code,
-        amount,
+    const wallet = new Wallet({
+        name,
+        cryptos,
     });
     try {
-        const data = await crypto.save();
+        const data = await wallet.save();
         logger.log('info', 'Saving in DB is OK, responding');
         res.status(200).json({
             state: 'success',
@@ -46,11 +45,11 @@ router.post('/', async (req, res, next) => {
     }
 });
 
-router.delete('/:cryptoID', async (req, res, next) => {
-    const { cryptoID } = req.params;
-    logger.log('info', `Request DELETE, with this id: ${cryptoID}`);
-    if (!cryptoID) {
-        logger.log('error', 'Request DELETE, Movement ID are needed');
+router.delete('/:walletID', async (req, res, next) => {
+    const { walletID } = req.params;
+    logger.log('info', `Request DELETE, with this id: ${walletID}`);
+    if (!walletID) {
+        logger.log('error', 'Request DELETE, walletID are needed');
         res.status(400).json({
             state: 'error',
             message: 'Crypto ID are needed',
@@ -58,7 +57,7 @@ router.delete('/:cryptoID', async (req, res, next) => {
         return;
     }
     try {
-        const data = await Cryptos.deleteOne({ _id: cryptoID });
+        const data = await Wallet.deleteOne({ _id: walletID });
         logger.log('info', 'Delete in DB is OK, responding');
         res.status(200).json({
             state: 'success',
@@ -70,30 +69,30 @@ router.delete('/:cryptoID', async (req, res, next) => {
 });
 
 // Update a movement
-router.patch('/:cryptoID', async (req, res, next) => {
-    const { cryptoID } = req.params;
-    const { code, amount } = req.body;
-    logger.log('info', `Request PATCH, with this id: ${cryptoID}, and this body: ${JSON.stringify(req.body)}`);
-    if (!cryptoID) {
-        logger.log('error', 'Request PATCH, Movement ID are needed');
+router.patch('/:walletID', async (req, res, next) => {
+    const { walletID } = req.params;
+    const { cryptos } = req.body;
+    logger.log('info', `Request PATCH, with this id: ${walletID}, and this body: ${JSON.stringify(req.body)}`);
+    if (!walletID) {
+        logger.log('error', 'Request PATCH, walletID are needed');
         res.status(400).json({
             state: 'error',
             message: 'Crypto ID are needed',
         });
         return;
     }
-    if (!code && !amount) {
-        logger.log('error', 'Request PATCH, Crypto ID are needed');
+    if (!cryptos && cryptos.length === 0) {
+        logger.log('error', 'Request PATCH, cryptos is needed');
         res.status(400).json({
             state: 'error',
-            message: 'Code and amount are needed',
+            message: 'Cryptos array is needed',
         });
         return;
     }
     try {
-        const data = await Cryptos.updateOne(
-            { _id: cryptoID },
-            { $set: { code, amount } },
+        const data = await Wallet.updateOne(
+            { _id: walletID },
+            { $set: { cryptos } },
 );
         logger.log('info', 'Delete in DB is OK, responding');
         res.status(200).json({

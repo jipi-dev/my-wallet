@@ -10,10 +10,12 @@ const port = process.env.PORT || 3000;
 const app = express();
 
 const cryptoRoute = require('./routes/crypto');
+const walletRoute = require('./routes/wallet');
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use('/api/cryptos', cryptoRoute);
+app.use('/api/wallets', walletRoute);
 
 // open mongoose connection
 mongoose.connect();
