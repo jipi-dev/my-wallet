@@ -4,6 +4,7 @@ const router = express.Router();
 const Wallet = require('../models/wallet.model');
 const errors = require('../middlewares/error');
 const logger = require('../logger');
+const validation = require('../validation/wallets');
 
 router.get('/', async (req, res, next) => {
     logger.log('info', 'Wallet Request GET');
@@ -19,30 +20,28 @@ router.get('/', async (req, res, next) => {
 });
 
 router.post('/', async (req, res, next) => {
-    logger.log('info', `Wallet Request POST, with this body: ${JSON.stringify(req.body)}`);
-    const { name, cryptos } = req.body;
-    if (!name || !cryptos) {
-        res.status(400).json({
-            state: 'error',
-            message: 'Name and cryptos are needed',
-        });
-        logger.log('error', 'Request POST, name are cryptos');
-        return;
-    }
-    const wallet = new Wallet({
-        name,
-        cryptos,
-    });
-    try {
-        const data = await wallet.save();
-        logger.log('info', 'Saving in DB is OK, responding');
-        res.status(200).json({
-            state: 'success',
-            data,
-        });
-    } catch (error) {
-        next({ status: 500, message: 'Error writing DB', stack: error });
-    }
+  const { error } = validation.validate(req.body);
+  if (error) {
+    logger.log('error', `We have an error on request parameters: ${JSON.stringify(error)}`);
+    return res.status(400).json({ status: 'error', type: 'validation', error: error.details.map((detail) => detail.message) });
+  }
+
+  logger.log('info', `Wallet Request POST, with this body: ${JSON.stringify(req.body)}`);
+  const { name, cryptos } = req.body;
+  const wallet = new Wallet({
+      name,
+      cryptos,
+  });
+  try {
+      const data = await wallet.save();
+      logger.log('info', 'Saving in DB is OK, responding');
+      res.status(200).json({
+          state: 'success',
+          data,
+      });
+  } catch (err) {
+      next({ status: 500, message: 'Error writing DB', stack: err });
+  }
 });
 
 router.delete('/:walletID', async (req, res, next) => {

@@ -21,3 +21,5 @@ app.use('/api/wallets', walletRoute);
 mongoose.connect();
 
 app.listen(port, () => logger.log('info', `API running on port ${port}`));
+
+module.exports = app;

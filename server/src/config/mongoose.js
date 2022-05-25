@@ -7,11 +7,13 @@ const dbuser = process.env.DB_USER;
 const dbpassword = process.env.DB_PASSWORD;
 const dburi = process.env.DB_URI;
 const dbName = process.env.DB_NAME;
+const dbAuth = process.env.DB_AUTH;
+const isTest = !!process.env.NODE_ENV;
 
 const baseConnectHost = process.env.SERVER === 'true' ? 'mongodb+srv' : 'mongodb';
 const finalUri = !dbuser && !dbpassword
-  ? `${baseConnectHost}://${dburi}/${dbName || ''}`
-  : `${baseConnectHost}://${dbuser}:${dbpassword}@${dburi}/${dbName || ''}`;
+  ? `${baseConnectHost}://${dburi}/${dbName || ''}${isTest ? '-test' : ''}${dbAuth || ''}`
+  : `${baseConnectHost}://${dbuser}:${dbpassword}@${dburi}/${dbName || ''}${isTest ? '-test' : ''}${dbAuth || ''}`;
 
   console.log(finalUri);
 // set mongoose Promise to Bluebird

@@ -9,25 +9,31 @@
     "start": "node src/server.js",
     "lint": "eslint ./src/",
     "lint:fix": "npm run lint -- --fix",
-    "lint:watch": "npm run lint -- --watch"
+    "lint:watch": "npm run lint -- --watch",
+    "test": "mocha --reporter spec --exit"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@hapi/joi": "^17.1.1",
     "body-parser": "^1.19.2",
+    "chai": "^4.3.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "http-status": "^1.5.0",
+    "mocha": "^10.0.0",
     "mongoose": "^6.2.7",
+    "request": "^2.88.2",
     "winston": "^3.6.0"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.17.0",
+    "chai-http": "^4.3.0",
     "eslint": "^8.13.0",
-    "eslint-plugin-prettier": "^4.0.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.0.0",
     "lint-staged": "^11.0.0",
     "nodemon": "^2.0.15",
     "prettier-eslint": "^12.0.0",
